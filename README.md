@@ -1,2 +1,3 @@
 # CSE-5523-Final-Project
-Final Project for CSE 5523
+
+To train the model, simply run `python train.py` with the dependencies installed.
