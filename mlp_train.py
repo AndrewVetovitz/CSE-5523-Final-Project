@@ -7,7 +7,7 @@ from tensorflow import keras
 from mnist_reader import load_mnist
 import random
 
-WEIGHTS_FILENAME = 'weights/cnn_best_weights'
+WEIGHTS_FILENAME = 'weights/mlp_best_weights'
 NUM_EPOCHS = 5
 BATCH_SIZE = 64
 
@@ -20,7 +20,7 @@ def display_image(image, wait_time=0):
     cv2.imshow('', image)
     cv2.waitKey(wait_time)
 
-def rotate_image(image, angle, rand_amt=0):
+def preprocess_image(image, angle, rand_amt=0):
     """Rotate an image by to the specified angle. Note that an
     incremented angle rotates counter-clockwise.
 
@@ -31,29 +31,22 @@ def rotate_image(image, angle, rand_amt=0):
     angle += random.randint(-rand_amt, rand_amt)
     rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
     result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
-    # Convert to BGR because the Conv2D layers don't like grayscale
-    return cv2.cvtColor(result, cv2.COLOR_GRAY2BGR)
+    return np.reshape(result, (28*28,))
 
-def rotate_images(images, angle, rand_amt=0):
-    return np.array([rotate_image(im, angle, rand_amt) for im in images])
+def preprocess_images(images, angle, rand_amt=0):
+    return np.array([preprocess_image(im, angle, rand_amt) for im in images])
 
 def get_model():
-    """Returns the CNN model to be used for training."""
-    model = None
-    # model = Sequential()
-    # model.add(Conv2D(32, kernel_size=(3, 3),
-    #                  activation='relu',
-    #                  input_shape=(28,28,3)))
-    # model.add(Conv2D(64, (3, 3), activation='relu'))
-    # model.add(MaxPooling2D(pool_size=(2, 2)))
-    # model.add(Dropout(0.25))
-    # model.add(Flatten())
-    # model.add(Dense(128, activation='relu'))
-    # model.add(Dropout(0.5))
-    # model.add(Dense(10, activation='softmax'))
-    # model.compile(loss=keras.losses.binary_crossentropy,
-    #               optimizer='rmsprop',
-    #               metrics=['accuracy'])
+    """Returns the MLP model to be used for training."""
+    model = Sequential()
+    model.add(Dense(512, activation='relu', input_shape=(784,)))
+    model.add(Dropout(0.2))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dropout(0.2))
+    model.add(Dense(10, activation='softmax'))
+    model.compile(loss='categorical_crossentropy',
+                  optimizer='rmsprop',
+                  metrics=['accuracy'])
     return model
 
 if __name__ == '__main__':
@@ -65,7 +58,11 @@ if __name__ == '__main__':
     x_train, y_train_i, x_test, y_test_i = [x[:int(len(x)*PERCENT_OF_DATA)] for x in [x_train, y_train_i, x_test, y_test_i]]
 
     # Rotate images
-    x_train, x_test = [rotate_images(data, 0, rand_amt=10) for data in [x_train, x_test]]
+    x_train, x_test = [preprocess_images(data, 0, rand_amt=0) for data in [x_train, x_test]]
+
+    # Normalize from 0-255 to 0.0-1.0
+    x_train, x_test = [x.astype('float32') for x in [x_train, x_test]]
+    x_train, x_test = [x / 255 for x in [x_train, x_test]]
 
     # Turn labels into one-hots
     y_train, y_test = [np.zeros((len(y), 10)) for y in [y_train_i, y_test_i]]
