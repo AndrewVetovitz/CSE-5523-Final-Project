@@ -7,7 +7,7 @@ from tensorflow import keras
 from mnist_reader import load_mnist
 import random
 
-WEIGHTS_FILENAME = 'weights/best_weights'
+WEIGHTS_FILENAME = 'weights/cnn_best_weights'
 NUM_EPOCHS = 5
 BATCH_SIZE = 64
 
