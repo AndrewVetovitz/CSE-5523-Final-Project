@@ -20,14 +20,14 @@ def display_image(image, wait_time=0):
     cv2.imshow('', image)
     cv2.waitKey(wait_time)
 
-def preprocess_image(image, angle, rand_amt=0):
+def preprocess_image(image):
     '''Preprocesses the image'''
     image = np.reshape(image, (28,28))
     # Convert to BGR because the Conv2D layers don't like grayscale
     return cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
 
-def preprocess_images(images, angle, rand_amt=0):
-    return np.array([preprocess_image(im, angle, rand_amt) for im in images])
+def preprocess_images(images):
+    return np.array([preprocess_image(im) for im in images])
 
 def get_model():
     """Returns the CNN model to be used for training."""
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     x_train, y_train_i, x_test, y_test_i = [x[:int(len(x)*PERCENT_OF_DATA)] for x in [x_train, y_train_i, x_test, y_test_i]]
 
     # Rotate images
-    x_train, x_test = [preprocess_images(data, 0, rand_amt=10) for data in [x_train, x_test]]
+    x_train, x_test = [preprocess_images(data) for data in [x_train, x_test]]
 
     # Turn labels into one-hots
     y_train, y_test = [np.zeros((len(y), 10)) for y in [y_train_i, y_test_i]]
