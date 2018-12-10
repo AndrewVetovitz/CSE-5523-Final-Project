@@ -40,20 +40,20 @@ def rotate_images(images, angle, rand_amt=0):
 def get_model():
     """Returns the CNN model to be used for training."""
     model = None
-    # model = Sequential()
-    # model.add(Conv2D(32, kernel_size=(3, 3),
-    #                  activation='relu',
-    #                  input_shape=(28,28,3)))
-    # model.add(Conv2D(64, (3, 3), activation='relu'))
-    # model.add(MaxPooling2D(pool_size=(2, 2)))
-    # model.add(Dropout(0.25))
-    # model.add(Flatten())
-    # model.add(Dense(128, activation='relu'))
-    # model.add(Dropout(0.5))
-    # model.add(Dense(10, activation='softmax'))
-    # model.compile(loss=keras.losses.binary_crossentropy,
-    #               optimizer='rmsprop',
-    #               metrics=['accuracy'])
+    model = Sequential()
+    model.add(Conv2D(32, kernel_size=(3, 3),
+                     activation='relu',
+                     input_shape=(28,28,3)))
+    model.add(Conv2D(64, (3, 3), activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
+    model.add(Flatten())
+    model.add(Dense(128, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(10, activation='softmax'))
+    model.compile(loss=keras.losses.binary_crossentropy,
+                  optimizer='rmsprop',
+                  metrics=['accuracy'])
     return model
 
 if __name__ == '__main__':
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     y_test[np.arange(len(y_test)), y_test_i] = 1.0
 
     # Display some training images (e.g. to check rotation)
-    # [display_image(x) for x in x_train[:10]]
+    [display_image(x) for x in x_train[:10]]
 
     # Train the model, saving only the best weights
     checkpointer = ModelCheckpoint(WEIGHTS_FILENAME, verbose=1, save_best_only=True)
