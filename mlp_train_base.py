@@ -7,8 +7,10 @@ from tensorflow import keras
 from mnist_reader import load_mnist
 import random
 
+import matplotlib.pyplot as plt
+
 WEIGHTS_FILENAME = 'weights/mlp_best_weights_base'
-NUM_EPOCHS = 5
+NUM_EPOCHS = 10
 BATCH_SIZE = 64
 
 # Percent of data to train & test on (useful to decrease for debugging)
@@ -40,6 +42,28 @@ def get_model():
                   metrics=['accuracy'])
     return model
 
+def plot_accuracy(history):
+    # Plot training & validation accuracy values
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('Model accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.savefig('plots/mlp_train_base_accuracy.png')
+    plt.close()
+
+def plot_loss(history):
+    # Plot training & validation loss values
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Model loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.savefig('plots/mlp_train_base_loss.png')
+    plt.close()
+
 if __name__ == '__main__':
     # Load data
     x_train, y_train_i = load_mnist('data/fashion', 'train')
@@ -66,13 +90,16 @@ if __name__ == '__main__':
     # Train the model, saving only the best weights
     checkpointer = ModelCheckpoint(WEIGHTS_FILENAME, verbose=1, save_best_only=True)
     model = get_model()
-    model.fit(x_train, y_train,
+    history = model.fit(x_train, y_train,
               batch_size=BATCH_SIZE,
               epochs=NUM_EPOCHS,
               verbose=1,
               validation_data=(x_test, y_test),
               callbacks=[checkpointer]
               )
+
+    plot_accuracy(history)
+    plot_loss(history)
 
     # Evaluate its performance
     predictions = model.predict(x_test)

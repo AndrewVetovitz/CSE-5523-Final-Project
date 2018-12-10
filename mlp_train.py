@@ -7,6 +7,8 @@ from tensorflow import keras
 from mnist_reader import load_mnist
 import random
 
+import matplotlib.pyplot as plt
+
 WEIGHTS_FILENAME = 'weights/mlp_best_weights'
 NUM_EPOCHS = 5
 BATCH_SIZE = 64
@@ -49,7 +51,31 @@ def get_model():
                   metrics=['accuracy'])
     return model
 
+def plot_accuracy(history, degree):
+    # Plot training & validation accuracy values
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('Model accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.savefig('plots/throwaway.png')
+    plt.close()
+
+def plot_loss(history, degree):
+    # Plot training & validation loss values
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Model loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.savefig('plots/throwaway2.png')
+    plt.close()
+
 if __name__ == '__main__':
+    degree = 30
+
     # Load data
     x_train, y_train_i = load_mnist('data/fashion', 'train')
     x_test, y_test_i = load_mnist('data/fashion', 't10k')
@@ -58,7 +84,7 @@ if __name__ == '__main__':
     x_train, y_train_i, x_test, y_test_i = [x[:int(len(x)*PERCENT_OF_DATA)] for x in [x_train, y_train_i, x_test, y_test_i]]
 
     # Rotate images
-    x_train, x_test = [preprocess_images(data, 0, rand_amt=0) for data in [x_train, x_test]]
+    x_train, x_test = [preprocess_images(data, 0, rand_amt=degree) for data in [x_train, x_test]]
 
     # Normalize from 0-255 to 0.0-1.0
     x_train, x_test = [x.astype('float32') for x in [x_train, x_test]]
@@ -75,13 +101,16 @@ if __name__ == '__main__':
     # Train the model, saving only the best weights
     checkpointer = ModelCheckpoint(WEIGHTS_FILENAME, verbose=1, save_best_only=True)
     model = get_model()
-    model.fit(x_train, y_train,
+    history = model.fit(x_train, y_train,
               batch_size=BATCH_SIZE,
               epochs=NUM_EPOCHS,
               verbose=1,
               validation_data=(x_test, y_test),
               callbacks=[checkpointer]
               )
+
+    plot_accuracy(history, degree)
+    plot_loss(history, degree)
 
     # Evaluate its performance
     predictions = model.predict(x_test)
