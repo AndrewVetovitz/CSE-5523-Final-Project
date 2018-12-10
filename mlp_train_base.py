@@ -10,7 +10,7 @@ import random
 import matplotlib.pyplot as plt
 
 WEIGHTS_FILENAME = 'weights/mlp_best_weights_base'
-NUM_EPOCHS = 10
+NUM_EPOCHS = 15
 BATCH_SIZE = 64
 
 # Percent of data to train & test on (useful to decrease for debugging)

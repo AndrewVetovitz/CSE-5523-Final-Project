@@ -10,7 +10,7 @@ import random
 import matplotlib.pyplot as plt
 
 WEIGHTS_FILENAME = 'weights/mlp_best_weights'
-NUM_EPOCHS = 5
+NUM_EPOCHS = 20
 BATCH_SIZE = 64
 
 # Percent of data to train & test on (useful to decrease for debugging)
@@ -59,7 +59,7 @@ def plot_accuracy(history, degree):
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
     plt.legend(['Train', 'Test'], loc='upper left')
-    plt.savefig('plots/throwaway.png')
+    plt.savefig('plots/mlp_train_accuracy_{}_degrees.png'.format(degree))
     plt.close()
 
 def plot_loss(history, degree):
@@ -70,7 +70,7 @@ def plot_loss(history, degree):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(['Train', 'Test'], loc='upper left')
-    plt.savefig('plots/throwaway2.png')
+    plt.savefig('plots/mlp_train_loss_{}_degrees.png'.format(degree))
     plt.close()
 
 if __name__ == '__main__':

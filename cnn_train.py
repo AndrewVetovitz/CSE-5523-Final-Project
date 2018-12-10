@@ -98,7 +98,7 @@ if __name__ == '__main__':
     y_test[np.arange(len(y_test)), y_test_i] = 1.0
 
     # Display some training images (e.g. to check rotation)
-    # [display_image(x) for x in x_train[:10]]
+    [display_image(x) for x in x_train[:10]]
 
     # Train the model, saving only the best weights
     checkpointer = ModelCheckpoint(WEIGHTS_FILENAME, verbose=1, save_best_only=True)
