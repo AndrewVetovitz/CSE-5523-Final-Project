@@ -9,8 +9,8 @@ import random
 
 import matplotlib.pyplot as plt
 
-WEIGHTS_FILENAME = 'weights/mlp_best_weights'
-NUM_EPOCHS = 20
+WEIGHTS_FILENAME = 'weights/mlp_best_weights_{}'
+NUM_EPOCHS = 15
 BATCH_SIZE = 64
 
 # Percent of data to train & test on (useful to decrease for debugging)
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     # [display_image(x) for x in x_train[:10]]
 
     # Train the model, saving only the best weights
-    checkpointer = ModelCheckpoint(WEIGHTS_FILENAME, verbose=1, save_best_only=True)
+    checkpointer = ModelCheckpoint(WEIGHTS_FILENAME.format(degree), verbose=1, save_best_only=True)
     model = get_model()
     history = model.fit(x_train, y_train,
               batch_size=BATCH_SIZE,
