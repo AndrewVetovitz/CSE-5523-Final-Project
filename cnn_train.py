@@ -105,11 +105,11 @@ if __name__ == '__main__':
     # Train the model, saving only the best weights
     checkpointer = ModelCheckpoint(WEIGHTS_FILENAME.format(degree), verbose=1, save_best_only=True)
     model = get_model()
-    history = model.fit(x_train, y_train,
+    history = model.fit(x_train_30, y_train,
               batch_size=BATCH_SIZE,
               epochs=NUM_EPOCHS,
               verbose=1,
-              validation_data=(x_test_10, y_test),
+              validation_data=(x_test_30, y_test),
               callbacks=[checkpointer]
               )
 
