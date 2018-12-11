@@ -90,7 +90,9 @@ if __name__ == '__main__':
     x_train, y_train_i, x_test, y_test_i = [x[:int(len(x)*PERCENT_OF_DATA)] for x in [x_train, y_train_i, x_test, y_test_i]]
 
     # Rotate images
-    x_train, x_test = [rotate_images(data, 0, rand_amt=degree) for data in [x_train, x_test]]
+    x_train_0, x_test_0 = [rotate_images(data, 0, 0) for data in [x_train, x_test]]
+    x_train_10, x_test_10 = [rotate_images(data, 0, 10) for data in [x_train, x_test]]
+    x_train_30, x_test_30 = [rotate_images(data, 0, 30) for data in [x_train, x_test]]
 
     # Turn labels into one-hots
     y_train, y_test = [np.zeros((len(y), 10)) for y in [y_train_i, y_test_i]]
@@ -98,7 +100,7 @@ if __name__ == '__main__':
     y_test[np.arange(len(y_test)), y_test_i] = 1.0
 
     # Display some training images (e.g. to check rotation)
-    [display_image(x) for x in x_train[:10]]
+    # [display_image(x) for x in x_train[:10]]
 
     # Train the model, saving only the best weights
     checkpointer = ModelCheckpoint(WEIGHTS_FILENAME.format(degree), verbose=1, save_best_only=True)
@@ -107,15 +109,27 @@ if __name__ == '__main__':
               batch_size=BATCH_SIZE,
               epochs=NUM_EPOCHS,
               verbose=1,
-              validation_data=(x_test, y_test),
+              validation_data=(x_test_10, y_test),
               callbacks=[checkpointer]
               )
 
     plot_accuracy(history, degree)
     plot_loss(history, degree)
 
-    # Evaluate its performance
-    predictions = model.predict(x_test)
+    # Evaluate its performance 0 degrees
+    predictions = model.predict(x_test_0)
     num_correct = len([i for i, pred in enumerate(predictions) if np.argmax(pred) == np.argmax(y_test[i])])
     percent_correct = num_correct / float(len(predictions))
-    print('Test set prediction accuracy: {}%'.format(percent_correct * 100))
+    print('Test set 0 degree prediction accuracy: {}%'.format(percent_correct * 100))
+
+    # Evaluate its performance 10 degrees
+    predictions = model.predict(x_test_10)
+    num_correct = len([i for i, pred in enumerate(predictions) if np.argmax(pred) == np.argmax(y_test[i])])
+    percent_correct = num_correct / float(len(predictions))
+    print('Test set 10 degree prediction accuracy: {}%'.format(percent_correct * 100))
+
+    # Evaluate its performance 30 degrees
+    predictions = model.predict(x_test_30)
+    num_correct = len([i for i, pred in enumerate(predictions) if np.argmax(pred) == np.argmax(y_test[i])])
+    percent_correct = num_correct / float(len(predictions))
+    print('Test set 30 degree prediction accuracy: {}%'.format(percent_correct * 100))

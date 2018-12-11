@@ -35,7 +35,7 @@ def rotate_images(images, angle, rand_amt=0):
     return np.array([rotate_image(im, angle, rand_amt) for im in images])
 
 if __name__ == '__main__':
-    degree = 0
+    degree = 30
 
     # Load data
     x_train, y_train_i = load_mnist('data/fashion', 'train')
@@ -55,6 +55,7 @@ if __name__ == '__main__':
     y_train, y_test = [np.zeros((len(y), 10)) for y in [y_train_i, y_test_i]]
     y_train[np.arange(len(y_train)), y_train_i] = 1.0
     y_test[np.arange(len(y_test)), y_test_i] = 1.0
+    
     # Display some training images (e.g. to check rotation)
     # [display_image(x) for x in x_train[:10]]
 

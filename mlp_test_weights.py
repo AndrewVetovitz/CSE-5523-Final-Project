@@ -59,7 +59,7 @@ if __name__ == '__main__':
     # [display_image(x) for x in x_train[:10]]
 
     model = load_model(
-        './weights/mlp_best_weights_30',
+        './weights/mlp_best_weights_base',
         custom_objects=None,
         compile=True
     )

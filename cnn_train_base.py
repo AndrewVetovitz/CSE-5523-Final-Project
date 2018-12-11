@@ -21,14 +21,22 @@ def display_image(image, wait_time=0):
     cv2.imshow('', image)
     cv2.waitKey(wait_time)
 
-def preprocess_image(image):
-    '''Preprocesses the image'''
-    image = np.reshape(image, (28,28))
-    # Convert to BGR because the Conv2D layers don't like grayscale
-    return cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+def rotate_image(image, angle, rand_amt=0):
+    """Rotate an image by to the specified angle. Note that an
+    incremented angle rotates counter-clockwise.
 
-def preprocess_images(images):
-    return np.array([preprocess_image(im) for im in images])
+    rand(-rand_amt, rand_amt) is added to the angle before
+    rotation."""
+    image = np.reshape(image, (28,28))
+    image_center = tuple(np.array(image.shape[1::-1]) / 2)
+    angle += random.randint(-rand_amt, rand_amt)
+    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+    # Convert to BGR because the Conv2D layers don't like grayscale
+    return cv2.cvtColor(result, cv2.COLOR_GRAY2BGR)
+
+def rotate_images(images, angle, rand_amt=0):
+    return np.array([rotate_image(im, angle, rand_amt) for im in images])
 
 def get_model():
     """Returns the CNN model to be used for training."""
@@ -79,7 +87,9 @@ if __name__ == '__main__':
     x_train, y_train_i, x_test, y_test_i = [x[:int(len(x)*PERCENT_OF_DATA)] for x in [x_train, y_train_i, x_test, y_test_i]]
 
     # Rotate images
-    x_train, x_test = [preprocess_images(data) for data in [x_train, x_test]]
+    x_train_0, x_test_0 = [rotate_images(data, 0, 0) for data in [x_train, x_test]]
+    x_train_10, x_test_10 = [rotate_images(data, 0, 10) for data in [x_train, x_test]]
+    x_train_30, x_test_30 = [rotate_images(data, 0, 30) for data in [x_train, x_test]]
 
     # Turn labels into one-hots
     y_train, y_test = [np.zeros((len(y), 10)) for y in [y_train_i, y_test_i]]
@@ -96,15 +106,27 @@ if __name__ == '__main__':
               batch_size=BATCH_SIZE,
               epochs=NUM_EPOCHS,
               verbose=1,
-              validation_data=(x_test, y_test),
+              validation_data=(x_test_0, y_test),
               callbacks=[checkpointer]
               )
 
     plot_accuracy(history)
     plot_loss(history)
 
-    # Evaluate its performance
-    predictions = model.predict(x_test)
+    # Evaluate its performance 0 degrees
+    predictions = model.predict(x_test_0)
     num_correct = len([i for i, pred in enumerate(predictions) if np.argmax(pred) == np.argmax(y_test[i])])
     percent_correct = num_correct / float(len(predictions))
-    print('Test set prediction accuracy: {}%'.format(percent_correct * 100))
+    print('Test set 0 degree prediction accuracy: {}%'.format(percent_correct * 100))
+
+    # Evaluate its performance 10 degrees
+    predictions = model.predict(x_test_10)
+    num_correct = len([i for i, pred in enumerate(predictions) if np.argmax(pred) == np.argmax(y_test[i])])
+    percent_correct = num_correct / float(len(predictions))
+    print('Test set 10 degree prediction accuracy: {}%'.format(percent_correct * 100))
+
+    # Evaluate its performance 30 degrees
+    predictions = model.predict(x_test_30)
+    num_correct = len([i for i, pred in enumerate(predictions) if np.argmax(pred) == np.argmax(y_test[i])])
+    percent_correct = num_correct / float(len(predictions))
+    print('Test set 30 degree prediction accuracy: {}%'.format(percent_correct * 100))
