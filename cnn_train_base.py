@@ -102,7 +102,7 @@ if __name__ == '__main__':
     # Train the model, saving only the best weights
     checkpointer = ModelCheckpoint(WEIGHTS_FILENAME, verbose=1, save_best_only=True)
     model = get_model()
-    history = model.fit(x_train, y_train,
+    history = model.fit(x_train_0, y_train,
               batch_size=BATCH_SIZE,
               epochs=NUM_EPOCHS,
               verbose=1,
